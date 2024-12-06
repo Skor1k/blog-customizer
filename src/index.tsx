@@ -1,11 +1,10 @@
 import { createRoot } from 'react-dom/client';
-import { StrictMode, CSSProperties } from 'react';
-import clsx from 'clsx';
-
+import { StrictMode, CSSProperties, useState } from 'react';
 import { Article } from './components/article/Article';
 import { ArticleParamsForm } from './components/article-params-form/ArticleParamsForm';
-import { defaultArticleState } from './constants/articleProps';
+import { OptionType, defaultArticleState } from './constants/articleProps';
 
+import clsx from 'clsx';
 import './styles/index.scss';
 import styles from './styles/index.module.scss';
 
@@ -13,21 +12,83 @@ const domNode = document.getElementById('root') as HTMLDivElement;
 const root = createRoot(domNode);
 
 const App = () => {
+
+	const [fontSelect, setFontSelect] = useState<OptionType>(
+		defaultArticleState.fontFamilyOption
+	);
+	const [fontSizeSelect, setFontSizeSelect] = useState<OptionType>(
+		defaultArticleState.fontSizeOption
+	);
+	const [fontColorSelect, setFontColorSelect] = useState<OptionType>(
+		defaultArticleState.fontColor
+	);
+	const [backgroundColorSelect, setBackgroundColorSelect] =
+		useState<OptionType>(defaultArticleState.backgroundColor);
+	const [contentWidthSelect, setContentWidthSelect] =
+		useState<OptionType>(defaultArticleState.contentWidth);
+
+	const setDefaultSelections = () => {
+		setFontSelect(defaultArticleState.fontFamilyOption);
+		setFontSizeSelect(defaultArticleState.fontSizeOption);
+		setFontColorSelect(defaultArticleState.fontColor);
+		setBackgroundColorSelect(defaultArticleState.backgroundColor);
+		setContentWidthSelect(defaultArticleState.contentWidth);
+
+		setSelectStyles({
+			fontFamily: defaultArticleState.fontFamilyOption.value,
+			fontSize: defaultArticleState.fontSizeOption.value,
+			fontColor: defaultArticleState.fontColor.value,
+			backgroundColor: defaultArticleState.backgroundColor.value,
+			contentWidth: defaultArticleState.contentWidth.value,
+		});
+	};
+
+	const [selectStyles, setSelectStyles] = useState({
+		fontFamily: defaultArticleState.fontFamilyOption.value,
+		fontSize: defaultArticleState.fontSizeOption.value,
+		fontColor: defaultArticleState.fontColor.value,
+		backgroundColor: defaultArticleState.backgroundColor.value,
+		contentWidth: defaultArticleState.contentWidth.value,
+	});
+
+	const handleFormSubmit = () => {
+		setSelectStyles({
+			fontFamily: fontSelect.value,
+			fontSize: fontSizeSelect.value,
+			fontColor: fontColorSelect.value,
+			backgroundColor: backgroundColorSelect.value,
+			contentWidth: contentWidthSelect.value,
+		});
+	};
+
 	return (
-		<main
+		<div
 			className={clsx(styles.main)}
 			style={
 				{
-					'--font-family': defaultArticleState.fontFamilyOption.value,
-					'--font-size': defaultArticleState.fontSizeOption.value,
-					'--font-color': defaultArticleState.fontColor.value,
-					'--container-width': defaultArticleState.contentWidth.value,
-					'--bg-color': defaultArticleState.backgroundColor.value,
+					'--font-family': selectStyles.fontFamily,
+					'--font-size': selectStyles.fontSize,
+					'--font-color': selectStyles.fontColor,
+					'--container-width': selectStyles.contentWidth,
+					'--bg-color': selectStyles.backgroundColor,
 				} as CSSProperties
 			}>
-			<ArticleParamsForm />
+			<ArticleParamsForm
+				fontSelect={fontSelect}
+				setFontSelect={setFontSelect}
+				fontSizeSelect={fontSizeSelect}
+				setFontSizeSelect={setFontSizeSelect}
+				fontColorSelect={fontColorSelect}
+				setFontColorSelect={setFontColorSelect}
+				backgroundColorSelect={backgroundColorSelect}
+				setBackgroundColorSelect={setBackgroundColorSelect}
+				contentWidthSelect={contentWidthSelect}
+				setContentWidthSelect={setContentWidthSelect}
+				onReset={setDefaultSelections}
+				onSubmit={handleFormSubmit}
+			/>
 			<Article />
-		</main>
+		</div>
 	);
 };
 
