@@ -10,7 +10,7 @@ import {
 	contentWidthArr,
 	fontColors,
 	fontFamilyOptions,
-	fontSizeOptions,
+	fontSizeOptions
 } from 'src/constants/articleProps';
 
 import cn from 'classnames';
@@ -80,8 +80,10 @@ export const ArticleParamsForm = (props: ArticleStatesForm) => {
 	};
 
 	const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-		event.preventDefault();
-		props.onSubmit();
+		if (formOpen) {
+			event.preventDefault();
+			props.onSubmit();
+		}		
 	};
 
 	const container = formOpen ? styles.container_open : styles.container;
@@ -134,3 +136,4 @@ export const ArticleParamsForm = (props: ArticleStatesForm) => {
 		</>
 	);
 };
+
