@@ -3,6 +3,7 @@ import { ArrowButton } from 'src/ui/arrow-button';
 import { Button } from 'src/ui/button';
 import { RadioGroup } from 'src/ui/radio-group/RadioGroup';
 import { Select } from 'src/ui/select/Select';
+import { useOutsideClickClose } from 'src/ui/select/hooks/useOutsideClickClose';
 import { Separator } from 'src/ui/separator/Separator';
 import {
 	OptionType,
@@ -13,7 +14,7 @@ import {
 	fontSizeOptions
 } from 'src/constants/articleProps';
 
-import cn from 'classnames';
+import clsx from 'clsx';
 import styles from './ArticleParamsForm.module.scss';
 
 type ArticleStatesForm = {
@@ -38,24 +39,14 @@ type ArticleStatesForm = {
 
 export const ArticleParamsForm = (props: ArticleStatesForm) => {
 
-	const [formOpen, setFormOpen] = useState(false);
-	const asideRef = useRef<HTMLElement>(null);
+	const [formOpen, setFormOpen] = useState<boolean>(false);
+	const asideRef = useRef<HTMLDivElement>(null);
 
-	useEffect(() => {
-		const handleClickOutside = (event: MouseEvent) => {
-			if (
-				asideRef.current &&
-				!asideRef.current.contains(event.target as Node)
-			) {
-				setFormOpen(false);
-			}
-		};
-
-		document.addEventListener('mousedown', handleClickOutside);
-		return () => {
-			document.removeEventListener('mousedown', handleClickOutside);
-		};
-	}, []);
+	useOutsideClickClose({
+		isOpen: formOpen,
+		rootRef: asideRef,
+		onChange: setFormOpen
+	});
 
 	const handleButtonClick = () => {
 		setFormOpen(!formOpen);
@@ -80,10 +71,8 @@ export const ArticleParamsForm = (props: ArticleStatesForm) => {
 	};
 
 	const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-		if (formOpen) {
-			event.preventDefault();
-			props.onSubmit();
-		}		
+		event.preventDefault();
+		props.onSubmit();	
 	};
 
 	const container = formOpen ? styles.container_open : styles.container;
@@ -91,7 +80,7 @@ export const ArticleParamsForm = (props: ArticleStatesForm) => {
 	return (
 		<>
 			<ArrowButton onClick={handleButtonClick} isOpen={formOpen} />
-			<aside className={cn(styles.container, container)} ref={asideRef}>
+			<aside className={clsx(styles.container, container)} ref={asideRef}>
 				<form className={styles.form} onSubmit={handleSubmit}>
 					<Select
 						selected={props.fontSelect}
